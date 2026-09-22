@@ -1,0 +1,4 @@
+___pycache__/
+*.pyc
+.idea/
+budget.db
