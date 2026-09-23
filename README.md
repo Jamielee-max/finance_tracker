@@ -31,3 +31,27 @@ python3 main.py
 ```bash
 pytest
 ```
+
+## Sample output
+
+Running `python3 main.py` against the sample data in `data/transactions.csv` prints:
+
+```
+Spending by category:
+        category     total
+0           food   -980.50
+1        grocery  -2377.15
+2        housing -22500.00
+3       shopping  -2829.99
+4  subscriptions  -1976.00
+5      transport  -1024.50
+
+Income vs expense:
+{'income': 45350.0, 'expense': -31688.14}
+
+Monthly summary:
+     month      net
+0  2026-01  4871.56
+1  2026-02  4072.90
+2  2026-03  4717.40
+```
