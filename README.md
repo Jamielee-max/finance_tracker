@@ -14,10 +14,20 @@ Reads raw transactions from a CSV, cleans and categorises them, loads them into 
 - **report.py** — queries the database for spending by category, income vs expense, and monthly summaries
 - **main.py** — runs the full pipeline end to end
 
+## Extending categories
+
+Transaction categories are keyword-based, defined in `CATEGORY_RULES` at the top of `transform.py`. To add a new category or keyword, just add an entry to that dictionary — for example:
+
+```python
+"entertainment": ["cinema", "steam", "playstation"],
+```
+
+Order matters: more specific phrases should come before broader ones they overlap with (e.g. "uber eats" is listed before "uber" so food delivery isn't miscategorised as transport).
+
 ## Setup
 
 ```bash
-pip install pandas pytest
+pip install -r requirements.txt
 ```
 
 ## Run the pipeline
