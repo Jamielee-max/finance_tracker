@@ -5,7 +5,7 @@ Takes the raw DataFrame from extract.py and turns it into something
 analysis-ready:
   - real date objects instead of date-shaped text
   - a spending "category" label per transaction (keyword-based)
-  - an "income" vs "expense" flag
+  - an "income" / "expense" / "neutral" flag
   - a "month" column so report.py can group by month later
 
 Nothing in here reads a file or writes to a database — pure data-in,
@@ -50,6 +50,20 @@ def categorise(description: str) -> str:
     return "other"
 
 
+def _classify_type(amount: float) -> str:
+    """Return "income", "expense", or "neutral" based on the amount's sign.
+
+    A zero amount (e.g. a correcting entry) is neither money in nor
+    money out, so it gets its own label instead of being lumped in
+    with expenses.
+    """
+    if amount > 0:
+        return "income"
+    if amount < 0:
+        return "expense"
+    return "neutral"
+
+
 def transform(df: pd.DataFrame) -> pd.DataFrame:
     """Clean the raw DataFrame and add the derived columns report.py needs.
 
@@ -61,7 +75,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
         A new DataFrame (the input is not mutated) with:
             date        -> real datetime64 dtype
             category    -> str, from categorise()
-            type        -> "income" or "expense"
+            type        -> "income", "expense", or "neutral"
             month       -> str like "2026-01", for grouping
     """
     df = df.copy()  # never mutate the caller's DataFrame
@@ -75,8 +89,9 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
     # 3. Add a category column using our keyword rules.
     df["category"] = df["description"].apply(categorise)
 
-    # 4. Add a 'type' column: income vs expense, based on the sign of amount.
-    df["type"] = df["amount"].apply(lambda x: "income" if x > 0 else "expense")
+    # 4. Add a 'type' column: income / expense / neutral, based on the
+    #    sign of amount.
+    df["type"] = df["amount"].apply(_classify_type)
 
     # 5. Add a 'month' column -- handy for grouping later.
     df["month"] = df["date"].dt.to_period("M").astype(str)

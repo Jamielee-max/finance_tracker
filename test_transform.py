@@ -72,6 +72,11 @@ def test_transform_marks_positive_amount_as_income():
     assert result.loc[0, "type"] == "income"
 
 
+def test_transform_marks_zero_amount_as_neutral():
+    result = transform(_raw_df(amount=0.0))
+    assert result.loc[0, "type"] == "neutral"
+
+
 def test_transform_converts_date_to_datetime():
     result = transform(_raw_df(date="2026-01-01"))
     assert pd.api.types.is_datetime64_any_dtype(result["date"])
